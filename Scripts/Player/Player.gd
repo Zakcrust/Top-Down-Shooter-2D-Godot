@@ -18,6 +18,7 @@ var equipped_gun = preload("res://Scripts/Guns/MachineGun.gd").new()
 var gun_damage : int
 var gun_state
 var can_shoot : bool = true
+var is_dead : bool = false
 
 signal shoot(damage, bullet_position, bullet_direction)
 
@@ -29,6 +30,12 @@ enum gun_states {
 	semi, auto
 }
 
+func set_dead(value : bool) -> void:
+	is_dead = value
+
+func get_dead() -> bool:
+	return is_dead
+
 func _ready():
 	print(screen_size)
 	print(boundaries)
@@ -39,15 +46,15 @@ func _process(delta):
 	match state:
 		states.hold:
 			_move(delta)
+			match gun_state:
+				gun_states.semi:
+					manual_fire()
+				gun_states.auto:
+					auto_fire()
 		states.gun:
 			pass
 		states.dead:
 			pass
-	match gun_state:
-		gun_states.semi:
-			manual_fire()
-		gun_states.auto:
-			auto_fire()
 
 func _move(delta):
 	velocity = Vector2()

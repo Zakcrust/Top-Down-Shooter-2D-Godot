@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Scenes/Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Playground/Playground.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Spawner/BulletSpawner.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scenes/Enemies/Base/Zombies.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Scripts/Temp/CanvasLayer.gd" type="Script" id=5]
 
 [node name="Main" type="Node2D"]
 
@@ -14,7 +15,7 @@ z_index = 1
 
 [node name="Zombies" parent="ObjectPoolAndNavigation" instance=ExtResource( 4 )]
 position = Vector2( 600, 60 )
-z_index = 1
+z_index = 2
 
 [node name="BulletSpawner" parent="." instance=ExtResource( 3 )]
 z_index = 1
@@ -26,4 +27,17 @@ z_index = 1
 [node name="CanvasModulate" type="CanvasModulate" parent="."]
 light_mask = 2
 color = Color( 0, 0, 0, 1 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+script = ExtResource( 5 )
+
+[node name="Button" type="Button" parent="CanvasLayer"]
+visible = false
+margin_right = 109.0
+margin_bottom = 20.0
+text = "Get Bullet Pool"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 [connection signal="shoot" from="Player" to="BulletSpawner" method="_on_Player_shoot"]
+[connection signal="pressed" from="CanvasLayer/Button" to="CanvasLayer" method="_on_Button_pressed"]

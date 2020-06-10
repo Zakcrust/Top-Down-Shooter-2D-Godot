@@ -1,4 +1,4 @@
-extends Area2D
+extends KinematicBody2D
 
 class_name Zombies
 
@@ -11,7 +11,7 @@ var player : KinematicBody2D
 var paths : PoolVector2Array
 
 enum states {
-	idle, action
+	idle, action, dead
 }
 
 func _ready():
@@ -43,6 +43,8 @@ func _process(delta):
 			pass
 		states.action:
 			action(delta)
+		states.dead:
+			pass
 
 
 func action(delta):
@@ -68,7 +70,10 @@ func move_along_path(distance : float) -> void:
 
 
 func _on_PathTimer_timeout():
-	update_path()
+	if player.get_dead():
+		$PathTimer.stop()
+	else:
+		update_path()
 
 
 func update_path() -> void:
@@ -80,9 +85,16 @@ func update_path() -> void:
 
 
 func _on_DetectRadius_body_entered(body):
-	if body is Player:
+	if body is Player and not state == states.dead:
 		print("player detected")
 		set_player(body)
 		update_path()
 		$PathTimer.start()
 		state = states.action
+
+func disable_collider() -> void:
+	set_collision_layer_bit(0, false)
+	set_collision_mask_bit(0, false)
+	z_index = 1
+	state = states.dead
+	set_process(false)

@@ -24,7 +24,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Scripts/Sounds/Sounds.gd"
 }, {
-"base": "Area2D",
+"base": "KinematicBody2D",
 "class": "Zombies",
 "language": "GDScript",
 "path": "res://Scripts/Enemies/Base/Zombies.gd"
