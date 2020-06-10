@@ -18,10 +18,22 @@ _global_script_classes=[ {
 "class": "Player",
 "language": "GDScript",
 "path": "res://Scripts/Player/Player.gd"
+}, {
+"base": "Node2D",
+"class": "Sounds",
+"language": "GDScript",
+"path": "res://Scripts/Sounds/Sounds.gd"
+}, {
+"base": "Area2D",
+"class": "Zombies",
+"language": "GDScript",
+"path": "res://Scripts/Enemies/Base/Zombies.gd"
 } ]
 _global_script_class_icons={
 "Guns": "",
-"Player": ""
+"Player": "",
+"Sounds": "",
+"Zombies": ""
 }
 
 [application]

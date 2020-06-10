@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Scripts/Player/Player.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/Player/PlayerExtended.gd" type="Script" id=1]
 [ext_resource path="res://Assets/PNG/Hitman 1/hitman1_hold.png" type="Texture" id=2]
 [ext_resource path="res://Assets/Lights/light.png" type="Texture" id=3]
+[ext_resource path="res://Scenes/Sounds/Sounds.tscn" type="PackedScene" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 9.64667, 21.1178 )
@@ -32,4 +33,18 @@ one_shot = true
 
 [node name="WeaponSlot" type="Sprite" parent="."]
 position = Vector2( 16, 14 )
+
+[node name="Light2D" type="Light2D" parent="WeaponSlot"]
+enabled = false
+texture = ExtResource( 3 )
+texture_scale = 0.5
+range_z_min = 0
+
+[node name="LightTimer" type="Timer" parent="WeaponSlot"]
+one_shot = true
+
+[node name="Sounds" parent="." instance=ExtResource( 4 )]
+sound_list = {
+"gun_shot": "res://Sounds/Sfx/gun_shot.wav"
+}
 [connection signal="timeout" from="Reload" to="." method="_on_Reload_timeout"]

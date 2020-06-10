@@ -14,7 +14,7 @@ onready var boundaries : Dictionary = {
 var velocity = Vector2()
 var state = states.hold
 
-var equipped_gun = preload("res://Scripts/Guns/Pistol.gd").new()
+var equipped_gun = preload("res://Scripts/Guns/MachineGun.gd").new()
 var gun_damage : int
 var gun_state
 var can_shoot : bool = true
@@ -33,6 +33,7 @@ func _ready():
 	print(screen_size)
 	print(boundaries)
 	load_gun()
+	$WeaponSlot/LightTimer.connect("timeout", self, "_light_down")
 
 func _process(delta):
 	match state:
@@ -47,7 +48,6 @@ func _process(delta):
 			manual_fire()
 		gun_states.auto:
 			auto_fire()
-
 
 func _move(delta):
 	velocity = Vector2()
@@ -68,10 +68,14 @@ func load_gun():
 	else:
 		gun_state = gun_states.semi
 	$Reload.set_wait_time(equipped_gun.get_reload_speed())
+	$WeaponSlot/LightTimer.set_wait_time(equipped_gun.get_reload_speed())
 
 func manual_fire():
 	if Input.is_action_just_pressed("fire") and can_shoot:
 		can_shoot = false
+		$WeaponSlot/Light2D.enabled = true
+		$WeaponSlot/LightTimer.start()
+		$Sounds.play_primary_sfx("gun_shot")
 		emit_signal("shoot", gun_damage, $WeaponSlot.global_position + Vector2(1, 0), $WeaponSlot.global_rotation)
 		$Reload.start()
 		pass
@@ -79,6 +83,9 @@ func manual_fire():
 func auto_fire():
 	if Input.is_action_pressed("fire") and can_shoot:
 		can_shoot = false
+		$WeaponSlot/Light2D.enabled = true
+		$WeaponSlot/LightTimer.start()
+		$Sounds.play_primary_sfx("gun_shot")
 		var direction = get_global_mouse_position().normalized()
 		emit_signal("shoot", gun_damage, $WeaponSlot.global_position + Vector2(1, 0), $WeaponSlot.global_rotation)
 		$Reload.start()
@@ -86,3 +93,6 @@ func auto_fire():
 
 func _on_Reload_timeout():
 	can_shoot = true
+
+func _light_down():
+	$WeaponSlot/Light2D.enabled = false

@@ -1,12 +1,19 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scenes/Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Playground/Playground.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Spawner/BulletSpawner.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Scenes/Enemies/Base/Zombies.tscn" type="PackedScene" id=4]
 
 [node name="Main" type="Node2D"]
 
-[node name="Playground" parent="." instance=ExtResource( 2 )]
+[node name="ObjectPoolAndNavigation" type="Navigation2D" parent="."]
+
+[node name="Playground" parent="ObjectPoolAndNavigation" instance=ExtResource( 2 )]
+z_index = 1
+
+[node name="Zombies" parent="ObjectPoolAndNavigation" instance=ExtResource( 4 )]
+position = Vector2( 600, 60 )
 z_index = 1
 
 [node name="BulletSpawner" parent="." instance=ExtResource( 3 )]
