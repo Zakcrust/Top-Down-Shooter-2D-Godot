@@ -45,7 +45,7 @@ animations = [ {
 extents = Vector2( 27.7983, 17.4773 )
 
 [sub_resource type="CircleShape2D" id=4]
-radius = 300.0
+radius = 197.262
 
 [node name="Zombies" type="KinematicBody2D" groups=[
 "zombies",
@@ -86,6 +86,11 @@ sound_list = {
 }
 
 [node name="VisibilityNotifier2D" type="VisibilityNotifier2D" parent="."]
+
+[node name="PatrolTimer" type="Timer" parent="."]
+wait_time = 2.0
 [connection signal="timeout" from="PathTimer" to="." method="_on_PathTimer_timeout"]
+[connection signal="area_entered" from="DetectRadius" to="." method="_on_DetectRadius_area_entered"]
 [connection signal="body_entered" from="DetectRadius" to="." method="_on_DetectRadius_body_entered"]
 [connection signal="screen_entered" from="VisibilityNotifier2D" to="." method="_on_VisibilityNotifier2D_screen_entered"]
+[connection signal="timeout" from="PatrolTimer" to="." method="_on_PatrolTimer_timeout"]

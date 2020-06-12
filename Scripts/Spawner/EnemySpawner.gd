@@ -3,14 +3,17 @@ extends Navigation2D
 signal start_wave(wave)
 signal end_wave(wave)
 
-var left_side_spawn_point = Vector2(-50, 320)
-var right_side_spawn_point = Vector2(1010, 320)
+var left_side_spawn_point = Vector2(-600, 320)
+var right_side_spawn_point = Vector2(1200, 320)
 
 var zombie_spawn : int = DataManager.get_init_spawn()
 var spawn_increment : float = DataManager.get_spawn_increment()
 var offset_spawn_pool : int = 2
 var wave : int = 1
 var rng : RandomNumberGenerator
+var current_score : int = 0
+
+signal add_score(score)
 
 var zombie : PackedScene = preload("res://Scenes/Enemies/NormalZombies.tscn")
 
@@ -48,6 +51,8 @@ func clear_enemy_instances():
 
 
 func check_enemy_spawn() -> void:
+	current_score += 1
+	emit_signal("add_score", current_score)
 	if has_no_enemy():
 		$Sounds.play_ambient_sfx("round_end")
 		emit_signal("end_wave", wave)

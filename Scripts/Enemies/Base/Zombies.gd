@@ -2,11 +2,13 @@ extends Enemies
 
 class_name Zombies
 
-var SPEED 			: int 	= 50
+var SPEED 			 : int 	= 50
+var patrol_direction : Vector2
+var patrol_target : Vector2 = Vector2(20,20)
 var state					= states.spawn
-var player 			: KinematicBody2D
-var paths 			: PoolVector2Array
-const SCREEN_SIZE 	: Vector2 = Vector2(960, 640)
+var player 			 : KinematicBody2D
+var paths 			 : PoolVector2Array
+const SCREEN_SIZE 	 : Vector2 = Vector2(960, 640)
 
 signal check_enemy_spawn()
 
@@ -17,14 +19,12 @@ func _init(default_speed = 50):
 
 
 enum states {
-	spawn, idle, action, dead
+	spawn, patrol, action, dead
 }
 
 func _ready():
 	z_index = 2
-	set_process(false)
-	print("health     : %s" % health)
-	print("damage res :  %s" % damage_resistance)
+	$Sprite.play("action")
 
 func set_speed(value : int) -> void:
 	SPEED = value
@@ -50,8 +50,8 @@ func _process(delta):
 	match state:
 		states.spawn:
 			move_to_screen(delta)
-		states.idle:
-			pass
+		states.patrol:
+			patrol(delta)
 		states.action:
 			action(delta)
 		states.dead:
@@ -65,9 +65,13 @@ func action(delta):
 	
 func move_to_screen(delta):
 	if position.x < 0:
-		position += transform.x * SPEED * delta
+		position += Vector2.RIGHT * SPEED * delta
 	else:
-		position -= transform.x * SPEED * delta
+		position -= Vector2.LEFT * SPEED * delta
+	if position.x > 20 or position.x < 940:
+		$PatrolTimer.start()
+		state = states.patrol
+		
 
 func move_along_path(distance : float) -> void:
 	if state == states.dead:
@@ -100,7 +104,13 @@ func update_path() -> void:
 	if path != null:
 		set_paths(path)
 
+func patrol_path(target_position) -> void:
+	var path = get_parent().get_simple_path(global_position, target_position)
+	if path != null:
+		set_paths(path)
+
 func player_discovered(body : KinematicBody2D) -> void:
+	$PatrolTimer.stop()
 	if state == states.dead:
 		return
 	set_player(body)
@@ -110,11 +120,11 @@ func player_discovered(body : KinematicBody2D) -> void:
 	state = states.action
 
 func _on_DetectRadius_body_entered(body):
-	if body is Player and state == states.idle:
+	if body is Player and state == states.patrol:
 		print("player detected")
 		player_discovered(body)
-		get_tree().call_group("zombies", "player_discovered", body)
-		$Sounds.play_primary_sfx("scream")
+#		get_tree().call_group("zombies", "player_discovered", body)
+#		$Sounds.play_primary_sfx("scream")
 
 func dead() -> void:
 	set_collision_layer_bit(0, false)
@@ -135,7 +145,30 @@ func damage(damage : int) -> void:
 	health -= (damage - damage_resistance)
 	if health < 0:
 		dead()
+		
+func patrol(delta) -> void:
+	var move_distance = SPEED * delta
+	look_at(global_position + patrol_direction)
+	move_along_path(move_distance)
+	position.x = clamp(position.x, 10, SCREEN_SIZE.x - 10)
+	position.y = clamp(position.y, 10, SCREEN_SIZE.y - 10)
 
+func choose(values : Array):
+	values.shuffle()
+	return values.front()
 
 func _on_VisibilityNotifier2D_screen_entered():
-	state = states.idle
+	pass
+
+
+func _on_PatrolTimer_timeout():
+	patrol_direction = choose([Vector2(0,30),Vector2(0,-30),Vector2(-30,0),Vector2(30,0)])
+	patrol_path(global_position + patrol_direction)
+
+
+func _on_DetectRadius_area_entered(area):
+	if area.get_parent() is Player and state == states.patrol:
+		player_discovered(area.get_parent())
+		get_tree().call_group("zombies", "player_discovered", area.get_parent())
+		$Sounds.play_primary_sfx("scream")
+		

@@ -88,6 +88,7 @@ func load_gun():
 func manual_fire():
 	if Input.is_action_just_pressed("fire") and can_shoot:
 		can_shoot = false
+		$AlertRadius/Collider.disabled = false
 		$WeaponSlot/Light2D.enabled = true
 		$WeaponSlot/LightTimer.start()
 		$Sounds.play_primary_sfx("gun_shot")
@@ -98,6 +99,7 @@ func manual_fire():
 func auto_fire():
 	if Input.is_action_pressed("fire") and can_shoot:
 		can_shoot = false
+		$AlertRadius/Collider.disabled = false
 		$WeaponSlot/Light2D.enabled = true
 		$WeaponSlot/LightTimer.start()
 		$Sounds.play_primary_sfx("gun_shot")
@@ -108,6 +110,7 @@ func auto_fire():
 
 func _on_Reload_timeout():
 	can_shoot = true
+	$AlertRadius/Collider.disabled = true
 
 func _light_down():
 	$WeaponSlot/Light2D.enabled = false
