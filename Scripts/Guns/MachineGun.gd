@@ -1,7 +1,7 @@
 extends Guns
 
 export (Texture) var mg_img = load("res://Assets/PNG/weapon_gun.png")
-export (int) var mg_damage : int = 10
+export (int) var mg_damage : int = 5
 export (float) var mg_reload_speed = 0.1
 export (bool) var is_full_auto = true
 

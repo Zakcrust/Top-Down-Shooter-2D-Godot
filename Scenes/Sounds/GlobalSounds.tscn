@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scenes/Sounds/SoundsItem.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/Sounds/GlobalSounds.gd" type="Script" id=2]
+
+[node name="GlobalSounds" type="Node2D"]
+script = ExtResource( 2 )
+global_sound_list = {
+"bullet_hit": "res://Sounds/Sfx/bullet_hit.ogg"
+}
+
+[node name="Sounds" type="AudioStreamPlayer2D" parent="."]
+script = ExtResource( 1 )
+primary_db = -30.0
+secondary_db = -30.0
+ambient_db = -30.0
+
+[node name="PrimarySfx" type="AudioStreamPlayer" parent="Sounds"]
+
+[node name="SecondSfx" type="AudioStreamPlayer" parent="Sounds"]
+
+[node name="Ambient" type="AudioStreamPlayer" parent="Sounds"]

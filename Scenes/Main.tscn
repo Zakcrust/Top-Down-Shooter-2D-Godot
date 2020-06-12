@@ -1,21 +1,52 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Scenes/Player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scenes/Playground/Playground.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Spawner/BulletSpawner.tscn" type="PackedScene" id=3]
-[ext_resource path="res://Scenes/Enemies/Base/Zombies.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Scripts/Temp/CanvasLayer.gd" type="Script" id=5]
+[ext_resource path="res://Scenes/Sounds/Sounds.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Scripts/Spawner/EnemySpawner.gd" type="Script" id=7]
+[ext_resource path="res://Fonts/DoubleFeature20.ttf" type="DynamicFontData" id=8]
+
+[sub_resource type="DynamicFont" id=1]
+size = 48
+font_data = ExtResource( 8 )
+
+[sub_resource type="Animation" id=2]
+resource_name = "fade_in"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("RoundLabel:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1, 2, 3 ),
+"transitions": PoolRealArray( 1, 1, 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
 
 [node name="Main" type="Node2D"]
 
 [node name="ObjectPoolAndNavigation" type="Navigation2D" parent="."]
+script = ExtResource( 7 )
 
 [node name="Playground" parent="ObjectPoolAndNavigation" instance=ExtResource( 2 )]
+light_mask = 3075
 z_index = 1
+occluder_light_mask = 3075
 
-[node name="Zombies" parent="ObjectPoolAndNavigation" instance=ExtResource( 4 )]
-position = Vector2( 600, 60 )
-z_index = 2
+[node name="Sounds" parent="ObjectPoolAndNavigation" instance=ExtResource( 6 )]
+sound_list = {
+"round_end": "res://Sounds/Music/zombie_round_end.ogg",
+"round_start": "res://Sounds/Music/zombie_round_start.ogg"
+}
+
+[node name="SpawnClearedTimer" type="Timer" parent="ObjectPoolAndNavigation"]
+wait_time = 10.0
+one_shot = true
 
 [node name="BulletSpawner" parent="." instance=ExtResource( 3 )]
 z_index = 1
@@ -23,10 +54,6 @@ z_index = 1
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 163.245, 96.2928 )
 z_index = 1
-
-[node name="CanvasModulate" type="CanvasModulate" parent="."]
-light_mask = 2
-color = Color( 0, 0, 0, 1 )
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 script = ExtResource( 5 )
@@ -39,5 +66,35 @@ text = "Get Bullet Pool"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Round" type="Control" parent="CanvasLayer"]
+margin_right = 40.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RoundLabel" type="Label" parent="CanvasLayer/Round"]
+modulate = Color( 1, 1, 1, 0 )
+margin_top = 296.0
+margin_right = 960.0
+margin_bottom = 344.0
+custom_fonts/font = SubResource( 1 )
+text = "Wave [Number]"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="RoundAnim" type="AnimationPlayer" parent="CanvasLayer/Round"]
+anims/fade_in = SubResource( 2 )
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+light_mask = 2
+color = Color( 0, 0, 0, 1 )
+[connection signal="end_wave" from="ObjectPoolAndNavigation" to="CanvasLayer" method="_on_ObjectPoolAndNavigation_end_wave"]
+[connection signal="start_wave" from="ObjectPoolAndNavigation" to="CanvasLayer" method="_on_ObjectPoolAndNavigation_start_wave"]
+[connection signal="timeout" from="ObjectPoolAndNavigation/SpawnClearedTimer" to="ObjectPoolAndNavigation" method="_on_SpawnClearedTimer_timeout"]
 [connection signal="shoot" from="Player" to="BulletSpawner" method="_on_Player_shoot"]
 [connection signal="pressed" from="CanvasLayer/Button" to="CanvasLayer" method="_on_Button_pressed"]

@@ -58,11 +58,19 @@ func _process(delta):
 
 func _move(delta):
 	velocity = Vector2()
+#	if Input.is_action_pressed("move_up"):
+#		velocity += transform.x * SPEED
+#	if Input.is_action_pressed("move_down"):
+#		velocity -= transform.x * SPEED
 	if Input.is_action_pressed("move_up"):
-		velocity += transform.x * SPEED
+		velocity.y = -1
 	if Input.is_action_pressed("move_down"):
-		velocity -= transform.x * SPEED
-	move_and_collide(velocity * delta)
+		velocity.y = 1
+	if Input.is_action_pressed("move_left"):
+		velocity.x = -1
+	if Input.is_action_pressed("move_right"):
+		velocity.x = 1
+	move_and_collide(velocity * SPEED * delta)
 	position.x = clamp(position.x, boundaries["min"].x, boundaries["max"].x)
 	position.y = clamp(position.y, boundaries["min"].y, boundaries["max"].y)
 	look_at(get_global_mouse_position())
